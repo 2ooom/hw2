@@ -8,6 +8,16 @@ class MoviesController < ApplicationController
 
   def index
     @movies = Movie.all
+    @title_class = ''
+    @release_class = ''
+    if params.key? :title_sort
+      @movies.sort_by! {|m| m.title }
+      @title_class =  'hilite'
+    end
+    if params.key? :release_sort
+      @movies.sort_by! {|m| m.release_date }
+      @release_class =  'hilite'
+    end
   end
 
   def new
