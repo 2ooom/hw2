@@ -27,17 +27,21 @@ class MoviesController < ApplicationController
     
     @title_class = ''
     @release_class = ''
-
+    @sort = ''
     if params.key? :title_sort
       @movies.sort_by! {|m| m.title }
       @title_class =  'hilite'
-    end
-    if params.key? :release_sort
+      session[:sort] = :title_sort
+    elsif params.key? :release_sort
       @movies.sort_by! {|m| m.release_date }
       @release_class =  'hilite'
+      session[:sort] = :release_sort
+    elsif session.key? :sort
+      @redirect = true 
+      @sort =  session[:sort]
     end
-    if @redirect 
-      redirect_to movies_path(:ratings => @selected_ratings_hash)
+    if @redirect       
+      redirect_to movies_path(:ratings => @selected_ratings_hash, @sort => true)
     end
   end
 
