@@ -8,14 +8,21 @@ class MoviesController < ApplicationController
 
   def index    
     @movies = Movie.all
-    
+    @redirect = false
     @selected_ratings = []
     @selected_ratings_hash = Hash.new
     @all_ratings = Movie.get_all_ratings
     if params.key? :ratings
       @selected_ratings = params[:ratings].keys
       @selected_ratings_hash = params[:ratings]
-      @movies = Movie.find(:all, :conditions => { :rating => @selected_ratings }) 
+      @movies = Movie.find(:all, :conditions => { :rating => @selected_ratings })
+      session[:selected_ratings_hash]= @selected_ratings_hash
+    elsif params.key?:commit
+      @selected_ratings = []
+      session.delete(:selected_ratings_hash)
+    elsif session.key? :selected_ratings_hash
+      @selected_ratings_hash = session[:selected_ratings_hash]
+      @redirect = true
     end
     
     @title_class = ''
@@ -29,7 +36,9 @@ class MoviesController < ApplicationController
       @movies.sort_by! {|m| m.release_date }
       @release_class =  'hilite'
     end
-   
+    if @redirect 
+      redirect_to movies_path(:ratings => @selected_ratings_hash)
+    end
   end
 
   def new
