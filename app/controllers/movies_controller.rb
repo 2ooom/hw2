@@ -10,10 +10,11 @@ class MoviesController < ApplicationController
     @movies = Movie.all
     
     @selected_ratings = []
+    @selected_ratings_hash = Hash.new
     @all_ratings = Movie.get_all_ratings
     if params.key? :ratings
       @selected_ratings = params[:ratings].keys
-      session[:selected_ratings] = @selected_ratings;
+      @selected_ratings_hash = params[:ratings]
       @movies = Movie.find(:all, :conditions => { :rating => @selected_ratings }) 
     end
     
@@ -28,7 +29,7 @@ class MoviesController < ApplicationController
       @movies.sort_by! {|m| m.release_date }
       @release_class =  'hilite'
     end
-
+   
   end
 
   def new
