@@ -6,10 +6,20 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index
+  def index    
     @movies = Movie.all
+    
+    @selected_ratings = []
+    @all_ratings = Movie.get_all_ratings
+    if params.key? :ratings
+      @selected_ratings = params[:ratings].keys
+      session[:selected_ratings] = @selected_ratings;
+      @movies = Movie.find(:all, :conditions => { :rating => @selected_ratings }) 
+    end
+    
     @title_class = ''
     @release_class = ''
+
     if params.key? :title_sort
       @movies.sort_by! {|m| m.title }
       @title_class =  'hilite'
@@ -18,6 +28,7 @@ class MoviesController < ApplicationController
       @movies.sort_by! {|m| m.release_date }
       @release_class =  'hilite'
     end
+
   end
 
   def new
